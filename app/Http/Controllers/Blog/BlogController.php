@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Repositories\All\Blogs\BlogInterface; 
+use App\Repositories\All\BlogComments\BlogCommmentInterface; 
+
 
 
 class BlogController extends Controller
 {
     public function __construct(
         protected BlogInterface $blogInterface,
+        protected BlogCommmentInterface $blogCommmentInterface,
+
     ) {}
     /**
      * Display a listing of the resource.
@@ -19,14 +23,20 @@ class BlogController extends Controller
     public function index()
     {
         //
-        $allBlogs = $this->BlogInterface->all(['display_name', 'trees_planted', 'created_at','message']);
+       $allBlogs = $this->blogInterface->all(
+            ['id', 'display_name', 'trees_planted', 'created_at', 'message'],
+            ['comments'] 
+        );
+
     
 
     // dd($allCategories);
     return Inertia::render('Home/Index', [
-        'allDonations' => $allBlogs,
+        'allBlogs' => $allBlogs,
     ]); 
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -49,7 +59,15 @@ class BlogController extends Controller
      */
     public function show(string $id)
     {
-        //
+    $blog = $this->blogInterface->findById(
+        (int) $id,
+        ['id', 'display_name', 'trees_planted', 'created_at', 'message'],
+        ['comments'] 
+    );
+
+    return Inertia::render('Home/Show', [
+        'blog' => $blog,
+    ]);
     }
 
     /**
