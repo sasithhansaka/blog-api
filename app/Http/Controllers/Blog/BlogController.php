@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 use App\Repositories\All\Blogs\BlogInterface; 
 use App\Repositories\All\BlogComments\BlogCommmentInterface; 
 
+use App\Http\Requests\BlogRequest;
+
+
+use App\Services\BlogService;
 
 
 class BlogController extends Controller
@@ -15,7 +19,7 @@ class BlogController extends Controller
     public function __construct(
         protected BlogInterface $blogInterface,
         protected BlogCommmentInterface $blogCommmentInterface,
-
+        protected BlogService $blogService,
     ) {}
     /**
      * Display a listing of the resource.
@@ -49,9 +53,19 @@ class BlogController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BlogRequest $request)
     {
         //
+            $validated = $request->validated();
+
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('blogs', 'public'); 
+                $validated['image'] = $path;
+            }
+
+
+            $this->blogService->store($validated);
+
     }
 
     /**
@@ -59,15 +73,15 @@ class BlogController extends Controller
      */
     public function show(string $id)
     {
-    $blog = $this->blogInterface->findById(
-        (int) $id,
-        ['id', 'display_name', 'trees_planted', 'created_at', 'message'],
-        ['comments'] 
-    );
+            $blog = $this->blogInterface->findById(
+                (int) $id,
+                ['id', 'display_name', 'trees_planted', 'created_at', 'message'],
+                ['comments'] 
+            );
 
-    return Inertia::render('Home/Show', [
-        'blog' => $blog,
-    ]);
+            return Inertia::render('Home/Show', [
+                'blog' => $blog,
+            ]);
     }
 
     /**
