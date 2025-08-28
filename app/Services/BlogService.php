@@ -22,13 +22,13 @@ class BlogService
         return $this->blogInterface->create($data);
     }
 
-    // public function update(int $id, array $data)
-    // {
-    //     // handle image upload
-    //     if (isset($data['image'])) {
-    //         $data['image'] = $data['image']->store('blogs', 'public');
-    //     }
+    public function update(int $id, array $data)
+    {
+        // handle image upload
+        if (isset($data['image'])) {
+            $data['image'] = $data['image']->store('blogs', 'public');
+        }
 
-    //     return $this->blogInterface->update($id, $data);
-    // }
+        return $this->blogInterface->update($id, $data);
+    }
 }

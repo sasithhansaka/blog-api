@@ -62,8 +62,6 @@ class BlogController extends Controller
                 $path = $request->file('image')->store('blogs', 'public'); 
                 $validated['image'] = $path;
             }
-
-
             $this->blogService->store($validated);
 
     }
@@ -95,9 +93,10 @@ class BlogController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(BlogRequest $request, string $id)
     {
-        //
+    $validated = $request->validated();
+    $this->blogService->update((int) $id, $validated);
     }
 
     /**
@@ -106,5 +105,7 @@ class BlogController extends Controller
     public function destroy(string $id)
     {
         //
+        $this->blogInterface->deleteById((int) $id);
+
     }
 }
